@@ -1,30 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using Microsoft.Graph;
+using Microsoft.Identity.Client;
+using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace MSGraphAPISampleApp
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+        }
+
+        private async void SignInButton_Click(object sender, RoutedEventArgs e)
+        {
+            var account = (await App.PublicClientApplication.GetAccountsAsync())?.FirstOrDefault();
+            try
+            {
+                AuthenticationResult authResult;
+                if (account == null)
+                {
+                    authResult = await App.PublicClientApplication.AcquireTokenAsync(Consts.Scopes);
+                }
+                else
+                {
+                    authResult = await App.PublicClientApplication.AcquireTokenSilentAsync(Consts.Scopes, account);
+                }
+
+                Debug.WriteLine(authResult.AccessToken);
+
+                // Get user profile.
+                var client = new GraphServiceClient(new DelegateAuthenticationProvider(x =>
+                {
+                    x.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
+                    return Task.CompletedTask;
+                }));
+                var user = await client.Me.Request().GetAsync();
+                textBlockProfile.Text = $"{user.DisplayName}, {user.UserPrincipalName}";
+            }
+            catch (MsalClientException ex)
+            {
+                Debug.WriteLine(ex);
+            }
         }
     }
 }
