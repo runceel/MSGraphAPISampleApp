@@ -5,6 +5,12 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSGraphAPISampleApp", "MSGraphAPISampleApp\MSGraphAPISampleApp.csproj", "{27A14650-273C-4E69-A4A3-9E79D8C242E9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11371F99-CA1D-426E-B51E-BBAABA8D1FB2}"
+	ProjectSection(SolutionItems) = preProject
+		license.txt = license.txt
+		readme.md = readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
